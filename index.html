@@ -6,7 +6,8 @@
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="datamaps.world.min.js"></script>
         <style>
-            div#container {height:500px; width:90%; position: relative;}
+            body {background-color:#6666AA;}
+            div#container {height:900px; width:100%; position: relative;}
         </style>
     </head>
     <body>
@@ -15,6 +16,9 @@
     </body>
     <script type="text/javascript">
         "use strict";
+        const width = document.getElementById('container').offsetWidth-60;
+        const height = width / 2;
+
         $.getJSON("new_cuanti.json", function (jsonData) {
             const mapData = {};
             const mapFills = {defaultFill: '#CCCCCC'};
@@ -31,10 +35,12 @@
             }
             var map = new Datamap({
                 element: document.getElementById('container'),
+                projection: 'mercator',
                 fills: mapFills,
                 data: mapData,
                 geographyConfig: {
-                    highlightBorderColor: '#bada55',
+                    borderWidth:1,
+                    radius:null,
                     popupTemplate: function(geography, data) {
                         let template = '<div class="hoverinfo"><h1>' + geography.properties.name + '</h1>';
 
@@ -45,13 +51,33 @@
 
                         template += '<div><ul>';
                         for (const style of countryData) {
-                            console.log(style);
                             template += '<li>' + style.style + ': ' + style.total + '</li>';
                         }
                         return template;
                     },
                     highlightBorderWidth: 3
+                },
+                done: function(datamap){
+                    const zoom = d3.behavior.zoom().scaleExtent([0.7, 5]).on("zoom", redraw);
+                    const svg = datamap.svg.call(zoom);
+                    function redraw() {
+                        /*const t = d3.event.translate;
+                        const s = d3.event.scale;  
+                        const h = height / 3;
+                        t[0] = Math.min(width / 2 * (s - 1), Math.max(width / 2 * (1 - s), t[0]));
+                        t[1] = Math.min(height / 2 * (s - 1) + h * s, Math.max(height / 2 * (1 - s) - h * s, t[1]));
+                        zoom.translate(t);*/
+                        //g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+                        datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+                    }
                 }
+
+                /*done: function(datamap){
+                    datamap.svg.call(d3.behavior.zoom().scaleExtent([0.7, 8]).on("zoom", redraw));
+                    function redraw() {
+                        datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+                    }
+                }*/
             });
         });
     </script>
