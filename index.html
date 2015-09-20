@@ -15,18 +15,12 @@
     </body>
     <script type="text/javascript">
         "use strict";
-        $.getJSON("countries_cuanti.json", function (jsonData) {
+        $.getJSON("new_cuanti.json", function (jsonData) {
             const mapData = {};
             const mapFills = {defaultFill: '#CCCCCC'};
             for (const country in jsonData) {
-                let max = -1;
-                let topStyle = -1;
-                for (const style in jsonData[country]) {
-                    if (jsonData[country][style] > max) {
-                        topStyle = style;
-                        max = jsonData[country][style];
-                    }
-                }
+                let topStyle = jsonData[country][0].style;
+                let max = jsonData[country][0].total;
                 mapData[country] = {
                     fillKey: topStyle,
                     numberOfThings: max
@@ -43,13 +37,16 @@
                     highlightBorderColor: '#bada55',
                     popupTemplate: function(geography, data) {
                         let template = '<div class="hoverinfo"><h1>' + geography.properties.name + '</h1>';
-                        const countryData = jsonData[geography.id];
 
                         if (!data) return template + 'This people don\'t metal';
 
+                        const countryData = jsonData[geography.id].slice(0,20);
+
+
                         template += '<div><ul>';
-                        for (const style in countryData) {
-                            template += '<li>' + style + ': ' + countryData[style] + '</li>';
+                        for (const style of countryData) {
+                            console.log(style);
+                            template += '<li>' + style.style + ': ' + style.total + '</li>';
                         }
                         return template;
                     },
