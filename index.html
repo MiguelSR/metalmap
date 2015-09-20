@@ -18,7 +18,7 @@
         "use strict";
         $.getJSON("countries_cuanti.json", function (jsonData) {
             const mapData = {};
-            const mapFills = {defaultFill: 'green'};
+            const mapFills = {defaultFill: '#CCCCCC'};
             for (const country in jsonData) {
                 let max = -1;
                 let topStyle = -1;
