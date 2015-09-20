@@ -1,5 +1,6 @@
 # Metal Map
-This is a visualization of all bands listed on Metal Archives in a map created with [DataMaps][datamaps]. Check my other project [Metal Scraper][metalscraper] to fully understand where the data come from.
+
+This is a map visualization of all bands listed on Metal Archives with [DataMaps][datamaps]. Check my other project [Metal Scraper][metalscraper] to fully understand where the data come from.
 
 You can see the live version [in its GitHub project page][metalmap].
 
