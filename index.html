@@ -15,6 +15,7 @@
               <a href="#close" class="cartodb-popup-close-button close">x</a>
               <div class="cartodb-popup-content-wrapper">
                 <div class="cartodb-popup-content">
+                    <h3 id="country-name"></h3>
                     <h4 id="list-loader"><i>Loading...</i></h4>
                     <ol id="mylist">
                     </ol>
@@ -37,6 +38,7 @@
                             $.get(query, function(data) {
                                 if (data.rows.length) {
                                     $('#list-loader').hide();
+                                    $('#country-name').html(country.country);
                                     $('#mylist').html(_.map(data.rows, function(r) { return '<li>'+ r.style +':' + r.count + '</li>' }).join('\n'));
                                 }
                             });
