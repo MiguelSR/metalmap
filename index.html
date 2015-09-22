@@ -1,70 +1,54 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="datamaps.world.min.js"></script>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
         <style>
-            body {background-color:#6666AA;}
-            div#container {height:900px; width:100%; position: relative;}
+            body {background-color: black;}
+            #mylist {color: white;}
         </style>
     </head>
     <body>
-        <div id="container"></div>
-        <a href="https://github.com/MiguelSR/metalmap"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
-    </body>
-    <script type="text/javascript">
-        "use strict";
-        const width = document.getElementById('container').offsetWidth-60;
-        const height = width / 2;
+        <div id="map" style="width:100%; height:600px;"></div>
+        <script type="infowindow/html" id="infowindow_template">
+            <div class="cartodb-popup dark v2">
+              <a href="#close" class="cartodb-popup-close-button close">x</a>
+              <div class="cartodb-popup-content-wrapper">
+                <div class="cartodb-popup-content">
+                    <h4 id="list-loader"><i>Loading...</i></h4>
+                    <ol id="mylist">
+                    </ol>
+                </div>
+              </div>
+              <div class="cartodb-popup-tip-container"></div>
+            </div>
+        </script>
+        <script>
+            "use strict";
+            window.onload = function() {
+                cartodb.createVis('map', 'https://topillo.cartodb.com/api/v2/viz/65949fe8-60b3-11e5-8c64-0e73ffd62169/viz.json', {
+                        legends: true,
+                    })
+                    .done(function(vis, layers) {
+                        const infoWindow = layers[1].getSubLayer(0).infowindow;
+                        infoWindow.set('template', function(country) {
+                            const query = "http://topillo.cartodb.com/api/v2/sql?q=select * from grouped_bands" +
+                                          " where country like '"+ country.country +"' order by count desc limit 10";
+                            $.get(query, function(data) {
+                                if (data.rows.length) {
+                                    $('#list-loader').hide();
+                                    $('#mylist').html(_.map(data.rows, function(r) { return '<li>'+ r.style +':' + r.count + '</li>' }).join('\n'));
+                                }
+                            });
+                            return $('#infowindow_template').html();
+                        });
 
-        $.getJSON("new_cuanti.json", function (jsonData) {
-            const mapData = {};
-            const mapFills = {defaultFill: '#CCCCCC'};
-            for (const country in jsonData) {
-                let topStyle = jsonData[country][0].style;
-                let max = jsonData[country][0].total;
-                mapData[country] = {
-                    fillKey: topStyle,
-                    numberOfThings: max
-                }
-                mapFills[topStyle] = '#' + (function co(lor){   return (lor +=
-                          [0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'][Math.floor(Math.random()*16)])
-                      && (lor.length == 6) ?  lor : co(lor); })('');
+                        vis.map.set({
+                            minZoom:2,
+                            maxZoom:6
+                        }); 
+                    });
             }
-            var map = new Datamap({
-                element: document.getElementById('container'),
-                projection: 'mercator',
-                fills: mapFills,
-                data: mapData,
-                geographyConfig: {
-                    borderWidth:0.3,
-                    highlightBorderWidth:0,
-                    radius:null,
-                    popupTemplate: function(geography, data) {
-                        let template = '<div class="hoverinfo"><h1>' + geography.properties.name + '</h1>';
-
-                        if (!data) return template + 'This people don\'t metal';
-
-                        const countryData = jsonData[geography.id].slice(0,20);
-
-
-                        template += '<div><ul>';
-                        for (const style of countryData) {
-                            template += '<li>' + style.style + ': ' + style.total + '</li>';
-                        }
-                        return template;
-                    },
-                },
-                done: function(datamap){
-                    const zoom = d3.behavior.zoom().scaleExtent([0.7, 5]).on("zoom", redraw);
-                    const svg = datamap.svg.call(zoom);
-                    function redraw() {
-                        datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-                    }
-                }
-            });
-        });
-    </script>
+        </script>
+    </body>
 </html>
