@@ -6,6 +6,8 @@
         <style>
             body {background-color: black;}
             #mylist {color: white;}
+            #mylist ol {overflow: auto;}
+            .no-max-height {max-height: none !important; overflow-y:auto;}
         </style>
     </head>
     <body>
@@ -14,7 +16,7 @@
             <div class="cartodb-popup dark v2">
               <a href="#close" class="cartodb-popup-close-button close">x</a>
               <div class="cartodb-popup-content-wrapper">
-                <div class="cartodb-popup-content">
+                <div class="cartodb-popup-content no-max-height">
                     <h3 id="country-name"></h3>
                     <h4 id="list-loader"><i>Loading...</i></h4>
                     <ol id="mylist">
@@ -39,7 +41,7 @@
                                 if (data.rows.length) {
                                     $('#list-loader').hide();
                                     $('#country-name').html(country.country);
-                                    $('#mylist').html(_.map(data.rows, function(r) { return '<li>'+ r.style +':' + r.count + '</li>' }).join('\n'));
+                                    $('#mylist').html(_.map(data.rows, function(r) { return '<li>'+ r.style +': ' + r.count + '</li>' }).join('\n'));
                                 }
                             });
                             return $('#infowindow_template').html();
@@ -47,7 +49,7 @@
 
                         vis.map.set({
                             minZoom:2,
-                            maxZoom:6
+                            maxZoom:7
                         }); 
                     });
             }
