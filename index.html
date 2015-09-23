@@ -16,6 +16,7 @@
             #mylist li:hover{ background-color: #333333;}
             #mylist li.style-selected{ background-color: #333333;}
             .no-max-height {max-height: none !important; overflow-y:auto;}
+            #bands-list {color: #AAA;}
         </style>
     </head>
     <body>
@@ -32,7 +33,7 @@
                     </ol>
                 </div>
                 <div class="col-md-6">
-                    <ul class="bands-list">
+                    <ul id="bands-list">
                     </ul>
                 </div> 
               </div>
@@ -68,13 +69,13 @@
                                         $.get(query, function(stylesData) {
                                             $('#mylist li:first').addClass('style-selected');
                                             if (r === data.rows[0]) {
-                                               $('.bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
+                                               $('#bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
                                             }
                                             $('#' + r.cartodb_id).click(
                                                 function hoverIn(event) {
                                                    $('.style-selected').removeClass('style-selected');
                                                    $(event.target).addClass('style-selected'); 
-                                                   $('.bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
+                                                   $('#bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
                                                 }
                                             );
                                         });
