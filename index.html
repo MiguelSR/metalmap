@@ -69,11 +69,11 @@
                                         $('#mylist').append(tpl);
 
                                         const query = "http://topillo.cartodb.com/api/v2/sql?q=select * from bands" +
-                                                      " where country ilike '"+ country.country +"' and style like '" + r.style + "' order by metalarchives_id asc limit 10";
-                                        $.get(query, function(stylesData) {
+                                                      " where country ilike '"+ country.country +"' and style like '" + r.style + "' order by metalarchives_id asc limit 50";
+                                        $.get(query, function(bandsData) {
                                             $('#mylist li:first').addClass('style-selected');
                                             if (r === data.rows[0]) {
-                                               $('#bands-list').html(_.map(stylesData.rows, function(band) {
+                                               $('#bands-list').html(_.map(bandsData.rows, function(band) {
                                                        const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
                                                        return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
                                                }).join("\n"));
@@ -82,7 +82,7 @@
                                                 function hoverIn(event) {
                                                    $('.style-selected').removeClass('style-selected');
                                                    $(event.target).addClass('style-selected'); 
-                                                   $('#bands-list').html(_.map(stylesData.rows, function(band) {
+                                                   $('#bands-list').html(_.map(bandsData.rows, function(band) {
                                                        const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
                                                        return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
                                                    }).join("\n"));
