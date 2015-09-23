@@ -73,13 +73,19 @@
                                         $.get(query, function(stylesData) {
                                             $('#mylist li:first').addClass('style-selected');
                                             if (r === data.rows[0]) {
-                                               $('#bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
+                                               $('#bands-list').html(_.map(stylesData.rows, function(band) {
+                                                       const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
+                                                       return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
+                                               }).join("\n"));
                                             }
                                             $('#' + r.cartodb_id).click(
                                                 function hoverIn(event) {
                                                    $('.style-selected').removeClass('style-selected');
                                                    $(event.target).addClass('style-selected'); 
-                                                   $('#bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
+                                                   $('#bands-list').html(_.map(stylesData.rows, function(band) {
+                                                       const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
+                                                       return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
+                                                   }).join("\n"));
                                                 }
                                             );
                                         });
