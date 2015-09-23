@@ -2,15 +2,19 @@
 <html>
     <head>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
         <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
         <style>
             html {height:100%;}
             body {background-color: black; height:100%;}
-            #map {width:100%; height:95%;}
+            #map {width:100%; height:100%;}
+            #country-name {padding:0px 0px 5px 15px;}
             #mylist {color: white;}
             #mylist { list-style-position: inside;}
             #mylist li{  padding:0; margin:0 0 2px -30px;}
             #mylist li:hover{ background-color: #333333;}
+            #mylist li.style-selected{ background-color: #333333;}
             .no-max-height {max-height: none !important; overflow-y:auto;}
         </style>
     </head>
@@ -20,13 +24,17 @@
         <script type="infowindow/html" id="infowindow_template">
             <div class="cartodb-popup dark v2">
               <a href="#close" class="cartodb-popup-close-button close">x</a>
-              <div class="cartodb-popup-content-wrapper">
-                <div class="cartodb-popup-content no-max-height">
+              <div class="cartodb-popup-content-wrapper row">
+                <div class="cartodb-popup-content col-md-6 no-max-height">
                     <h3 id="country-name"></h3>
                     <h4 id="list-loader"><i>Loading...</i></h4>
                     <ol id="mylist">
                     </ol>
                 </div>
+                <div class="col-md-6">
+                    <ul class="bands-list">
+                    </ul>
+                </div> 
               </div>
               <div class="cartodb-popup-tip-container"></div>
             </div>
@@ -35,7 +43,10 @@
             "use strict";
             window.onload = function() {
                 cartodb.createVis('map', 'https://topillo.cartodb.com/api/v2/viz/65949fe8-60b3-11e5-8c64-0e73ffd62169/viz.json', {
+                        fullscreen: false,
                         legends: true,
+                        search: false,
+                        shareable: false
                     })
                     .done(function(vis, layers) {
                         const infoWindow = layers[1].getSubLayer(0).infowindow;
@@ -54,12 +65,16 @@
 
                                         const query = "http://topillo.cartodb.com/api/v2/sql?q=select * from bands" +
                                                       " where country ilike '"+ country.country +"' and style like '" + r.style + "' order by metalarchives_id asc limit 10";
-                                        $.get(query, function(data) {
-                                            $('#' + r.cartodb_id).hover(
-                                                function hoverIn() {
-                                                   $('#aux').html(_.pluck(data.rows, 'name').join(" - ")); 
-                                                }, function hoverOut() {
-                                                   $('#aux').html('');
+                                        $.get(query, function(stylesData) {
+                                            $('#mylist li:first').addClass('style-selected');
+                                            if (r === data.rows[0]) {
+                                               $('.bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
+                                            }
+                                            $('#' + r.cartodb_id).click(
+                                                function hoverIn(event) {
+                                                   $('.style-selected').removeClass('style-selected');
+                                                   $(event.target).addClass('style-selected'); 
+                                                   $('.bands-list').html(_.map(stylesData.rows, function(band) {return '<li>' + band.name + '</li>'}).join("\n"));
                                                 }
                                             );
                                         });
