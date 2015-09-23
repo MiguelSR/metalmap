@@ -50,6 +50,10 @@
                         shareable: false
                     })
                     .done(function(vis, layers) {
+                        const southWest = L.latLng(-90, -180);
+                        const northEast = L.latLng(90, 180);
+                        console.log(layers[0].leafletMap);
+                        layers[0].leafletMap.setMaxBounds(L.latLngBounds(southWest, northEast))
                         const infoWindow = layers[1].getSubLayer(0).infowindow;
                         infoWindow.set('template', function(country) {
                             const query = "http://topillo.cartodb.com/api/v2/sql?q=select * from grouped_bands" +
@@ -86,7 +90,7 @@
                         });
 
                         vis.map.set({
-                            minZoom:2,
+                            minZoom:3,
                             maxZoom:7
                         }); 
                     });
