@@ -67,6 +67,7 @@
                     );
                 };
                 const renderBands = function(styleRow) {
+                    $('#bands-list').html('<li>Loading...</li>');
                     const bandsQuery = `${API_ROOT}/sql?q=select * from bands where country ilike '${styleRow.country}' and style like '${styleRow.style}' order by metalarchives_id asc limit 10`;
                     $.get(bandsQuery, function (bandsData) {
                         $('#bands-list').html(_.map(bandsData.rows, renderBandRow).join("\n"));
