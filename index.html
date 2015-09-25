@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
         <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
@@ -37,7 +38,6 @@
             </div>
         </script>
         <script>
-            "use strict";
             window.onload = function() {
                 const API_ROOT = 'https://topillo.cartodb.com/api/v2';
 
@@ -46,7 +46,7 @@
                         $('#country-name').html(data.rows[0].country);
                         $('#mylist').html('');
 
-                        for (const styleRow of data.rows) {
+                        for (var styleRow of data.rows) {
                             renderStyleRow(styleRow);
                         }
 
