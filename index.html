@@ -4,17 +4,16 @@
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
         <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
         <style>
             html {height:100%;}
             body {background-color: black; height:100%;}
             #map {width:100%; height:100%;}
             #country-name {padding:0px 0px 5px 15px;}
-            #mylist {color: white;}
-            #mylist { list-style-position: inside;}
-            #mylist li{  padding:0; margin:0 0 2px -30px;}
-            #mylist li:hover{ background-color: #333333;}
-            #mylist li.style-selected{ background-color: #333333;}
+            #list-loader {margin:0 auto;}
+            #mylist {color: white; list-style-position: inside;}
+            #mylist li {padding:0; margin:0 0 2px -30px;}
+            #mylist li:hover { background-color: #333333;}
+            #mylist li.style-selected { background-color: #333333;}
             .no-max-height {max-height: none !important; overflow-y:auto;}
             #bands-list {color: #AAA;}
         </style>
@@ -24,82 +23,85 @@
         <div id="aux" style="color:white"></div>
         <script type="infowindow/html" id="infowindow_template">
             <div class="cartodb-popup dark v2">
-              <a href="#close" class="cartodb-popup-close-button close">x</a>
-              <div class="cartodb-popup-content-wrapper row">
-                <div class="cartodb-popup-content col-md-6 no-max-height">
-                    <h3 id="country-name"></h3>
-                    <h4 id="list-loader"><i>Loading...</i></h4>
-                    <ol id="mylist">
-                    </ol>
+                <a href="#close" class="cartodb-popup-close-button close">x</a>
+                <div class="cartodb-popup-content-wrapper row">
+                    <div class="cartodb-popup-content col-md-6 no-max-height">
+                        <h3 id="country-name"></h3>
+                        <ol id="mylist"></ol>
+                    </div>
+                    <div class="col-md-6">
+                        <ul id="bands-list"><li>Loading...</li></ul>
+                    </div> 
                 </div>
-                <div class="col-md-6">
-                    <ul id="bands-list">
-                    </ul>
-                </div> 
-              </div>
-              <div class="cartodb-popup-tip-container"></div>
+                <div class="cartodb-popup-tip-container"></div>
             </div>
         </script>
         <script>
             "use strict";
             window.onload = function() {
-                cartodb.createVis('map', 'https://topillo.cartodb.com/api/v2/viz/65949fe8-60b3-11e5-8c64-0e73ffd62169/viz.json', {
+                const API_ROOT = 'https://topillo.cartodb.com/api/v2';
+
+                const renderStyles = function(data) {
+                    if (data.rows.length) {
+                        $('#country-name').html(data.rows[0].country);
+                        $('#mylist').html('');
+
+                        for (const styleRow of data.rows) {
+                            renderStyleRow(styleRow);
+                        }
+
+                        $('#mylist li:first').addClass('style-selected');
+                        renderBands(data.rows[0]);
+                    }
+                };
+                const renderStyleRow = function(styleRow) {
+                    const tpl = `<li id="${styleRow.cartodb_id}">${styleRow.style}: <strong>${styleRow.count}</strong></li>\n`; 
+
+                    $('#mylist').append(tpl);
+                    $('#' + styleRow.cartodb_id).click(
+                        function checkStyle(event) {
+                            $('.style-selected').removeClass('style-selected');
+                            $(event.target).addClass('style-selected'); 
+                            renderBands(styleRow);
+                        }
+                    );
+                };
+                const renderBands = function(styleRow) {
+                    const bandsQuery = `${API_ROOT}/sql?q=select * from bands where country ilike '${styleRow.country}' and style like '${styleRow.style}' order by metalarchives_id asc limit 10`;
+                    $.get(bandsQuery, function (bandsData) {
+                        $('#bands-list').html(_.map(bandsData.rows, renderBandRow).join("\n"));
+                    });
+                };
+                const renderBandRow = function(band) {
+                    const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
+                    return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
+                };
+                const getInfoWindowTemplate = function(country) {
+                    const stylesQuery = `${API_ROOT}/sql?q=select * from grouped_bands where country like '${country.country}' order by count desc limit 10`
+                    $.get(stylesQuery, renderStyles);
+                    return $('#infowindow_template').html();
+                }
+                const initializeApp = function(vis, layers) {
+                    const southWest = L.latLng(-90, -180);
+                    const northEast = L.latLng(90, 180);
+
+                    vis.map.set({
+                        minZoom:3,
+                        maxZoom:7
+                    }); 
+
+                    layers[0].leafletMap.setMaxBounds(L.latLngBounds(southWest, northEast))
+                    layers[1].getSubLayer(0).infowindow.set('template', getInfoWindowTemplate);
+                }
+
+                cartodb.createVis('map', API_ROOT + '/viz/65949fe8-60b3-11e5-8c64-0e73ffd62169/viz.json', {
                         fullscreen: false,
                         legends: true,
                         search: false,
                         shareable: false
                     })
-                    .done(function(vis, layers) {
-                        const southWest = L.latLng(-90, -180);
-                        const northEast = L.latLng(90, 180);
-                        console.log(layers[0].leafletMap);
-                        layers[0].leafletMap.setMaxBounds(L.latLngBounds(southWest, northEast))
-                        const infoWindow = layers[1].getSubLayer(0).infowindow;
-                        infoWindow.set('template', function(country) {
-                            const query = "http://topillo.cartodb.com/api/v2/sql?q=select * from grouped_bands" +
-                                          " where country like '"+ country.country +"' order by count desc limit 10";
-                            $.get(query, function(data) {
-                                if (data.rows.length) {
-                                    $('#list-loader').hide();
-                                    $('#country-name').html(country.country);
-                                    $('#mylist').html('');
+                    .done(initializeApp);
 
-                                    for (const r of data.rows) {
-                                        const tpl = '<li id="' + r.cartodb_id + '">'+ r.style +': <strong>' + r.count + '</strong></li>\n'; 
-                                        $('#mylist').append(tpl);
-
-                                        const query = "http://topillo.cartodb.com/api/v2/sql?q=select * from bands" +
-                                                      " where country ilike '"+ country.country +"' and style like '" + r.style + "' order by metalarchives_id asc limit 50";
-                                        $.get(query, function(bandsData) {
-                                            $('#mylist li:first').addClass('style-selected');
-                                            if (r === data.rows[0]) {
-                                               $('#bands-list').html(_.map(bandsData.rows, function(band) {
-                                                       const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
-                                                       return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
-                                               }).join("\n"));
-                                            }
-                                            $('#' + r.cartodb_id).click(
-                                                function hoverIn(event) {
-                                                   $('.style-selected').removeClass('style-selected');
-                                                   $(event.target).addClass('style-selected'); 
-                                                   $('#bands-list').html(_.map(bandsData.rows, function(band) {
-                                                       const bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id
-                                                       return '<li><a href="'+bandLink+'" target="_blank">' + band.name + '</a></li>'
-                                                   }).join("\n"));
-                                                }
-                                            );
-                                        });
-                                    }
-                                }
-                            });
-                            return $('#infowindow_template').html();
-                        });
-
-                        vis.map.set({
-                            minZoom:3,
-                            maxZoom:7
-                        }); 
-                    });
             }
         </script>
     </body>
