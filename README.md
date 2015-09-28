@@ -1,8 +1,10 @@
 # Metal Map
 
+Click here to see the live map! [Metal Map][metalmap]
+
 This is a map visualization of all bands listed on Metal Archives with [CartoDB][cartodb]. Check my other project [Metal Scraper][metalscraper] to fully understand where the data come from.
 
-You can see the live version [in its GitHub project page][metalmap].
+I've made it with ES6 syntax, Babel and GULP just for fun. Not really needed.
 
 [cartodb]: http://www.cartodb.com
 [metalscraper]: https://github.com/MiguelSR/metal-scraper
