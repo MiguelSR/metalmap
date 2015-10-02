@@ -2,6 +2,7 @@ window.onload = function() {
     const API_ROOT = 'https://topillo.cartodb.com/api/v2';
     let firstYear = 1963;
     let lastYear = 2015;
+    let currentCountry = null;
 
     const renderStyles = function(data) {
         let i = 0;
@@ -42,7 +43,9 @@ window.onload = function() {
         return `<li><a href="${bandLink}" target="_blank">${band.name} (${band.city || 'Unknown'})</a></li>`
     };
     const getInfoWindowTemplate = function(country) {
-        if (country.country) {
+        currentCountry = country || currentCountry;
+        country = country || currentCountry;
+        if (country) {
             const stylesQuery = `${API_ROOT}/sql?q=select style, country, count(1) from bands_complex where country like '${country.country}' and formation_year between '01-01-${firstYear}' and '01-01-${lastYear}' group by style, country order by count desc limit 10`
             $.get(stylesQuery, renderStyles);
         }
@@ -79,7 +82,7 @@ window.onload = function() {
                 [firstYear, lastYear] = $(this).slider('values'); 
                 $('#start-year').html(firstYear);
                 $('#end-year').html(lastYear);
-                layers[1].getSubLayer(0).infowindow.set('template', getInfoWindowTemplate);
+                getInfoWindowTemplate();
             });
 
         $('#filter-button').click(toggleFilterColumn);

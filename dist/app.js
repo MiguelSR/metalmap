@@ -7,6 +7,7 @@ window.onload = function () {
     var API_ROOT = 'https://topillo.cartodb.com/api/v2';
     var firstYear = 1963;
     var lastYear = 2015;
+    var currentCountry = null;
 
     var renderStyles = function renderStyles(data) {
         var i = 0;
@@ -66,7 +67,9 @@ window.onload = function () {
         return '<li><a href="' + bandLink + '" target="_blank">' + band.name + ' (' + (band.city || 'Unknown') + ')</a></li>';
     };
     var getInfoWindowTemplate = function getInfoWindowTemplate(country) {
-        if (country.country) {
+        currentCountry = country || currentCountry;
+        country = country || currentCountry;
+        if (country) {
             var stylesQuery = API_ROOT + '/sql?q=select style, country, count(1) from bands_complex where country like \'' + country.country + '\' and formation_year between \'01-01-' + firstYear + '\' and \'01-01-' + lastYear + '\' group by style, country order by count desc limit 10';
             $.get(stylesQuery, renderStyles);
         }
@@ -108,7 +111,7 @@ window.onload = function () {
 
             $('#start-year').html(firstYear);
             $('#end-year').html(lastYear);
-            layers[1].getSubLayer(0).infowindow.set('template', getInfoWindowTemplate);
+            getInfoWindowTemplate();
         });
 
         $('#filter-button').click(toggleFilterColumn);
