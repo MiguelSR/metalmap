@@ -1,0 +1,59 @@
+html {height:100%;}
+body {background-color: black; height:100%;}
+#floating-filters {
+    position: absolute;
+    width:50px;
+    background-color: rgba(0, 0, 0, 0.6);
+    top:0;
+    left:0;
+    right:0;
+    color:white;
+    text-align: center;
+    height: 100%;
+}
+#floating-filters .filter-button {
+    position: absolute;
+    top: 50%;
+    margin-top:-30px;
+    display: table-cell;
+    height: 60px;
+    width:100%;
+    background:none;
+    border:0
+}
+#floating-filters .glyphicon-filter {font-size:1.6em;}
+#filter-column {
+    display: none;
+    color: white;
+    position: absolute;
+    height: 100%;
+    width: 300px;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+#year-select-container {
+    margin: 0 auto;
+    height: 500px;
+    top:50%;
+    margin-top:-250px;
+}
+#label-years {
+    position: absolute;
+    top: 5%;
+    margin: 0 auto;
+    width: 100%;
+}
+#year-select {
+    margin: 0 auto;
+    height: 500px;
+    top:50%;
+    margin-top:25%;
+}
+#map {width:100%; height:100%;}
+#country-name {padding:0px 0px 5px 15px;}
+#list-loader {margin:0 auto;}
+#styles-list {color: white; list-style-position: inside;}
+#styles-list li {padding:0; margin:0 0 2px -30px;}
+#styles-list li:hover { background-color: #333333;}
+#styles-list li.style-selected { background-color: #333333;}
+.no-max-height {max-height: none !important; overflow-y:auto;}
+#bands-list {color: #AAA;}
