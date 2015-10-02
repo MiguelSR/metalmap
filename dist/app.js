@@ -101,7 +101,7 @@ window.onload = function () {
             values: [1963, 2015],
             step: 1,
             range: true
-        }).on('slidechange', function () {
+        }).on('slide', function () {
             var _$$slider = $(this).slider('values');
 
             var _$$slider2 = _slicedToArray(_$$slider, 2);
@@ -111,6 +111,7 @@ window.onload = function () {
 
             $('#start-year').html(firstYear);
             $('#end-year').html(lastYear);
+        }).on('slidechange', function () {
             getInfoWindowTemplate();
         });
 

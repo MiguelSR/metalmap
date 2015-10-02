@@ -78,10 +78,12 @@ window.onload = function() {
             step: 1,
             range: true
             })
-            .on('slidechange', function() {
+            .on('slide', function() {
                 [firstYear, lastYear] = $(this).slider('values'); 
                 $('#start-year').html(firstYear);
                 $('#end-year').html(lastYear);
+            })
+            .on('slidechange', function() {
                 getInfoWindowTemplate();
             });
 
