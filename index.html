@@ -59,10 +59,10 @@
             #map {width:100%; height:100%;}
             #country-name {padding:0px 0px 5px 15px;}
             #list-loader {margin:0 auto;}
-            #mylist {color: white; list-style-position: inside;}
-            #mylist li {padding:0; margin:0 0 2px -30px;}
-            #mylist li:hover { background-color: #333333;}
-            #mylist li.style-selected { background-color: #333333;}
+            #styles-list {color: white; list-style-position: inside;}
+            #styles-list li {padding:0; margin:0 0 2px -30px;}
+            #styles-list li:hover { background-color: #333333;}
+            #styles-list li.style-selected { background-color: #333333;}
             .no-max-height {max-height: none !important; overflow-y:auto;}
             #bands-list {color: #AAA;}
         </style>
@@ -82,21 +82,13 @@
                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
             </button>
         </div>
-        <!--<div style="padding: 10px; position:absolute; background-color: rgba(0, 0, 0, 0.6); color:white; bottom:50px; left:0; right:0; margin: auto; width:300px; text-align:center">
-            <label for="all_years">All years</label>
-            <input id="all_years" type="checkbox">
-
-            <span></span>
-            <input id="date-selector" type="range" min="1964" max="2015" step="1">
-            <input id="date-label" type="text" disabled="disabled" style="background:none; border:0px"> 
-        </div>-->
         <script type="infowindow/html" id="infowindow_template">
             <div class="cartodb-popup dark v2">
                 <a href="#close" class="cartodb-popup-close-button close">x</a>
                 <div class="cartodb-popup-content-wrapper row">
                     <div class="cartodb-popup-content col-md-6 no-max-height">
                         <h3 id="country-name"></h3>
-                        <ol id="mylist"></ol>
+                        <ol id="styles-list"></ol>
                     </div>
                     <div class="col-md-6">
                         <ul id="bands-list"><li>Loading...</li></ul>

@@ -13,7 +13,7 @@ window.onload = function () {
         var i = 0;
         if (data.rows.length) {
             $('#country-name').html(data.rows[0].country);
-            $('#mylist').html('');
+            $('#styles-list').html('');
 
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
@@ -41,14 +41,16 @@ window.onload = function () {
                 }
             }
 
-            $('#mylist li:first').addClass('style-selected');
+            $('#styles-list li:first').addClass('style-selected');
             renderBands(data.rows[0]);
+        } else {
+            $('#styles-list').html('<li>Sorry, no data available.</li>');
         }
     };
     var renderStyleRow = function renderStyleRow(styleRow) {
         var tpl = '<li id="' + styleRow.cartodb_id + '">' + styleRow.style + ': <strong>' + styleRow.count + '</strong></li>\n';
 
-        $('#mylist').append(tpl);
+        $('#styles-list').append(tpl);
         $('#' + styleRow.cartodb_id).click(function checkStyle(event) {
             $('.style-selected').removeClass('style-selected');
             $(event.target).addClass('style-selected');
@@ -67,9 +69,11 @@ window.onload = function () {
         return '<li><a href="' + bandLink + '" target="_blank">' + band.name + ' (' + (band.city || 'Unknown') + ')</a></li>';
     };
     var getInfoWindowTemplate = function getInfoWindowTemplate(country) {
+        $('#styles-list').html('<li>Loading...</li>');
+        $('#bands-list').html('');
         currentCountry = country || currentCountry;
         country = country || currentCountry;
-        if (country) {
+        if (country.country) {
             var stylesQuery = API_ROOT + '/sql?q=select style, country, count(1) from bands_complex where country like \'' + country.country + '\' and formation_year between \'01-01-' + firstYear + '\' and \'01-01-' + lastYear + '\' group by style, country order by count desc limit 10';
             $.get(stylesQuery, renderStyles);
         }
