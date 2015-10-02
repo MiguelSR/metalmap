@@ -56,4 +56,6 @@ body {background-color: black; height:100%;}
 #styles-list li:hover { background-color: #333333;}
 #styles-list li.style-selected { background-color: #333333;}
 .no-max-height {max-height: none !important; overflow-y:auto;}
+.max-width-50 {max-width: 50% !important; min-width:200px;}
+.auto-width {width: auto !important;}
 #bands-list {color: #AAA;}
