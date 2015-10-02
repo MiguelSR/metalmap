@@ -33,7 +33,6 @@ window.onload = function() {
     const renderBands = function(styleRow) {
         $('#bands-list').html('<li>Loading...</li>');
         const bandsQuery = `${API_ROOT}/sql?q=select * from bands_complex where country ilike '${styleRow.country}' and style like '${styleRow.style}' and formation_year between '01-01-${firstYear}' and '01-01-${lastYear}' order by metalarchives_id asc limit 10`;
-        console.log(bandsQuery);
         $.get(bandsQuery, function (bandsData) {
             $('#bands-list').html(_.map(bandsData.rows, renderBandRow).join("\n"));
         });
