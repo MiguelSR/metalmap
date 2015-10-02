@@ -50,14 +50,14 @@ window.onload = function () {
     };
     var renderBands = function renderBands(styleRow) {
         $('#bands-list').html('<li>Loading...</li>');
-        var bandsQuery = API_ROOT + '/sql?q=select * from bands_complex where country ilike \'' + styleRow.country + '\' and style like \'' + styleRow.style + '\' order by metalarchives_id asc limit 10';
+        var bandsQuery = API_ROOT + '/sql?q=select * from bands_complex where country ilike \'' + styleRow.country + '\' and style like \'' + styleRow.style + '\' order by formation_year asc limit 10';
         $.get(bandsQuery, function (bandsData) {
             $('#bands-list').html(_.map(bandsData.rows, renderBandRow).join("\n"));
         });
     };
     var renderBandRow = function renderBandRow(band) {
         var bandLink = 'http://www.metal-archives.com/bands/' + band.name.replace(' ', '_') + '/' + band.metalarchives_id;
-        return '<li><a href="' + bandLink + '" target="_blank">' + band.name + '</a></li>';
+        return '<li><a href="' + bandLink + '" target="_blank">' + band.name + ' (' + (band.city || 'Unknown') + ')</a></li>';
     };
     var getInfoWindowTemplate = function getInfoWindowTemplate(country) {
         var stylesQuery = API_ROOT + '/sql?q=select * from grouped_bands where country like \'' + country.country + '\' order by count desc limit 10';
