@@ -28,7 +28,7 @@ window.onload = function() {
     };
     const renderBands = function(styleRow) {
         $('#bands-list').html('<li>Loading...</li>');
-        const bandsQuery = `${API_ROOT}/sql?q=select * from bands where country ilike '${styleRow.country}' and style like '${styleRow.style}' order by metalarchives_id asc limit 10`;
+        const bandsQuery = `${API_ROOT}/sql?q=select * from bands_complex where country ilike '${styleRow.country}' and style like '${styleRow.style}' order by metalarchives_id asc limit 10`;
         $.get(bandsQuery, function (bandsData) {
             $('#bands-list').html(_.map(bandsData.rows, renderBandRow).join("\n"));
         });
@@ -57,10 +57,9 @@ window.onload = function() {
 
     cartodb.createVis('map', API_ROOT + '/viz/65949fe8-60b3-11e5-8c64-0e73ffd62169/viz.json', {
             fullscreen: false,
-            legends: true,
+            legends: false,
             search: false,
             shareable: false
         })
         .done(initializeApp);
-
 }

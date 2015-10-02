@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
 window.onload = function () {
@@ -49,7 +50,7 @@ window.onload = function () {
     };
     var renderBands = function renderBands(styleRow) {
         $('#bands-list').html('<li>Loading...</li>');
-        var bandsQuery = API_ROOT + '/sql?q=select * from bands where country ilike \'' + styleRow.country + '\' and style like \'' + styleRow.style + '\' order by metalarchives_id asc limit 10';
+        var bandsQuery = API_ROOT + '/sql?q=select * from bands_complex where country ilike \'' + styleRow.country + '\' and style like \'' + styleRow.style + '\' order by metalarchives_id asc limit 10';
         $.get(bandsQuery, function (bandsData) {
             $('#bands-list').html(_.map(bandsData.rows, renderBandRow).join("\n"));
         });
@@ -78,8 +79,12 @@ window.onload = function () {
 
     cartodb.createVis('map', API_ROOT + '/viz/65949fe8-60b3-11e5-8c64-0e73ffd62169/viz.json', {
         fullscreen: false,
-        legends: true,
+        legends: false,
         search: false,
         shareable: false
     }).done(initializeApp);
 };
+
+},{}]},{},[1]);
+
+//# sourceMappingURL=app.js.map
